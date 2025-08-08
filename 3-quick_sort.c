@@ -1,83 +1,85 @@
 #include "sort.h"
 
-/**
- * swap - Swaps two integers
- * @a: pointer to first integer
- * @b: pointer to second integer
- */
-void swap(int *a, int *b)
-{
-	if (a != b)
-	{
-		int temp = *a;
-		*a = *b;
-		*b = temp;
-	}
-}
+void quick_sort_recursive(int *array, size_t size, int *start, size_t total);
 
 /**
- * lomuto_partition - Partitions the array using Lomuto scheme
- * @array: the array to sort
- * @low: starting index
- * @high: ending index (pivot position)
- * @size: total size of the array (for printing)
- * Return: final position of the pivot
- */
-int lomuto_partition(int *array, int low, int high, size_t size)
-{
-	int pivot = array[high];
-	int i = low;
-	int j;
-
-	for (j = low; j < high; j++)
-	{
-		if (array[j] < pivot)
-		{
-			if (i != j)
-			{
-				swap(&array[i], &array[j]);
-				print_array(array, size);
-			}
-			i++;
-		}
-	}
-
-	if (i != high)
-	{
-		swap(&array[i], &array[high]);
-		print_array(array, size);
-	}
-
-	return (i);
-}
-
-/**
- * quick_sort_rec - Recursive Quick sort
- * @array: the array to sort
- * @low: starting index
- * @high: ending index
- * @size: total size of the array
- */
-void quick_sort_rec(int *array, int low, int high, size_t size)
-{
-	if (low < high)
-	{
-		int pivot_index = lomuto_partition(array, low, high, size);
-
-		quick_sort_rec(array, low, pivot_index - 1, size);
-		quick_sort_rec(array, pivot_index + 1, high, size);
-	}
-}
-
-/**
- * quick_sort - Entry point for Quick sort
- * @array: the array to sort
- * @size: number of elements in array
+ * quick_sort - sorts an array in ascending order
+ *		using quick sorting algorithm
+ * @array: array to sort
+ * @size: size of array
  */
 void quick_sort(int *array, size_t size)
 {
-	if (array == NULL || size < 2)
-		return;
+	size_t i = 0;
+	int identical = 1;
+	int total = size;
+	int *start = &array[0];
 
-	quick_sort_rec(array, 0, size - 1, size);
+	if (size > 1)
+	{
+		while (i < size)
+		{
+			if (array[0] != array[i])
+			{
+				identical = 0;
+				break;
+			}
+
+			i++;
+		}
+
+		if (identical == 0)
+			quick_sort_recursive(&array[0], size, start, total);
+	}
+}
+
+/**
+ * quick_sort_recursive - sorts an array in ascending order
+ *			  using quick sorting algorithm
+ * @array: array to sort
+ * @size: number of element to sort in array
+ * @start: beginning of the whole array
+ * @total: total size of the array
+ */
+void quick_sort_recursive(int *array, size_t size, int *start, size_t total)
+{
+	int pivot = size - 1;
+	int i = -1, j = 0;
+	int temp;
+
+	if (size > 1)
+	{
+		while (j <= pivot)
+		{
+			if (array[j] < array[pivot])
+			{
+				i++;
+
+				if (i != j)
+				{
+					temp = array[j];
+					array[j] = array[i];
+					array[i] = temp;
+
+					print_array(&start[0], total);
+				}
+			}
+
+			j++;
+		}
+
+		i++;
+
+		if (i != pivot)
+		{
+			temp = array[pivot];
+			array[pivot] = array[i];
+			array[i] = temp;
+
+			print_array(&start[0], total);
+		}
+
+		quick_sort_recursive(&array[0], i, &start[0], total);
+		quick_sort_recursive(&array[i + 1], size - (i + 1), &start[0], total);
+	}
 }
