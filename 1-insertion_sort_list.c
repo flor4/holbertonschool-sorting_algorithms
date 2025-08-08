@@ -1,70 +1,67 @@
 #include "sort.h"
-
+#include <stddef.h>
+void swap_node(listint_t **list, listint_t *node1, listint_t *node2);
 /**
- * swap_nodes - Swaps two adjacent nodes in a doubly linked list
- * @list: Double pointer to the head of the list
- * @left: The left node (must come before in the list)
- * @right: The right node (must come after in the list)
+ * insertion_sort_list - Sort a doubly linked list in ascending order.
+ * @list: List of integers.
  *
- * Return: Nothing
+ * Return: Void.
  */
-void swap_nodes(listint_t **list, listint_t *left, listint_t *right)
+void insertion_sort_list(listint_t **list)
 {
-	if (!left || !right || !list || !*list)
+	listint_t *current;
+
+	if (list == NULL || *list == NULL || (*list)->next == NULL)
 	{
 		return;
 	}
 
-	if (left->prev)
+	current = (*list)->next;
+
+	while (current != NULL)
 	{
-		left->prev->next = right;
+
+		while (current->prev != NULL && current->n < current->prev->n)
+		{
+			swap_nodes(list, current->prev, current);
+			print_list(*list);
+		}
+
+		current = current->next;
+	}
+}
+/**
+ * swap_node - Switch two nodes
+ * @list: Head of the doubly linked list
+ * @node1: First node to swap
+ * @node2: Second node to swap
+ * Return: Void
+ */
+void swap_nodes(listint_t **list, listint_t *node1, listint_t *node2)
+{
+	if (node1 == NULL || node2 == NULL || node2->prev != node1)
+	{
+		return;
+	}
+
+	if (node1->prev != NULL)
+	{
+		node1->prev->next = node2;
 	}
 
 	else
 	{
-		*list = right;
+		(*list) = node2;
 	}
 
-	if (right->next)
+	if (node2->next != NULL)
 	{
-		right->next->prev = left;
+		node2->next->prev = node1;
 	}
 
-	right->prev = left->prev;
-	left->next = right->next;
-	right->next = left;
-	left->prev = right;
-}
+	node1->next = node2->next;
+	node2->prev = node1->prev;
 
-/**
-* insertion_sort_list - Sorts a doubly linked list of integers
-*                       in ascending order using the Insertion sort algorithm
-* @list: Double pointer to the head of the list
-*
- * Return: Nothing
- */
-void insertion_sort_list(listint_t **list)
-{
-	if (!list || !*list || !(*list)->next)
-	{
-		return;
-	}
-
-	listint_t *current = (*list)->next;
-
-	while (current)
-	{
-		listint_t *to_insert = current;
-
-		listint_t *prev = current->prev;
-
-			while (prev && prev->n > to_insert->n)
-			{
-				swap_nodes(list, prev, to_insert);
-				print_list(*list);
-				prev = to_insert->prev;
-			}
-
-		current = to_insert->next;
-	}
+	node2->next = node1;
+	node1->prev = node2;
 }
